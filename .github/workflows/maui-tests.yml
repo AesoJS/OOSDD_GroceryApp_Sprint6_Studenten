@@ -1,0 +1,39 @@
+name: MAUI Unit Tests
+ 
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+  pull_request:
+    branches:
+      - main
+      - develop
+      - feature_UC18
+      - feature_UC19
+
+jobs:
+  testbuild:
+    runs-on: windows-latest  # Of windows-latest/macOS-latest als specifiek platform nodig is
+    steps:
+      
+      - name: Haal de repository op
+        uses: actions/checkout@v4
+
+      - name: Installeer .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Installeren MAUI Workload
+        run: dotnet workload install maui
+
+      - name: Herstellen NuGet packages
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --configuration Release
+
+      - name: Uitvoeren unit tests
+        run: dotnet test --configuration Release --no-restore --no-build --verbosity normal
